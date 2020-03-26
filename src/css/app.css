@@ -1,0 +1,12 @@
+body{overflow-x:hidden;position:relative;margin:0;padding:0;width:100%;min-width:1200px;font-family:"Microsoft Yahei";word-break:break-all}
+b,button,dd,div,dl,dt,em,form,i,img,input,label,li,p,span,textarea,ul{margin:0;padding:0;border:0;list-style:none;font-style:normal}
+h1,h2,h3,h4,h5,h6{margin:0;padding:0;border:0;font-weight:400}
+a{text-decoration:none;cursor:pointer}
+a:hover,img:hover{opacity:.9;-webkit-transition:.25s ease;-moz-transition:.25s ease;transition:.25s ease;filter:alpha(opacity=90);-ms-transition:.25s ease}
+
+html,body,#app{width:100%;height:100%}
+
+body{font-size:.18rem;color:#fff}
+
+.fl{float:left}
+.fr{float:right}

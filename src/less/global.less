@@ -1,0 +1,33 @@
+.w(@px) {
+  width: @px/100rem;
+}
+
+.h(@px) {
+  height: @px/100rem;
+}
+
+.wf {
+  width: 100%;
+}
+
+.hf {
+  height: 100%;
+}
+
+.fslh(@px) {
+  font-size: @px/100rem;
+  line-height: @px/100rem;
+}
+
+.lh(@px) {
+  height: @px/100rem;
+  line-height: @px/100rem;
+}
+
+.mwc(@width, @parent_width, @top, @bot) {
+  margin: @top/100rem ((@parent_width)-(@width))/2/100rem @bot/100rem ((@parent_width)-(@width))/2/100rem;
+}
+
+.pwc(@width, @parent_width, @top, @bot) {
+  padding: @top/100rem ((@parent_width)-(@width))/2/100rem @bot/100rem ((@parent_width)-(@width))/2/100rem;
+}
