@@ -1,35 +1,56 @@
 <template>
   <div class="page"> 
-    <div class="buttons">
-      <div class="left-buttons">
-        <i-button @click="Modal_Add = true">添 加</i-button>
-        <i-button @click="Modal_Delete = true">删 除</i-button>
-      </div>
-      <div class="upload">
-        <i-button @click="Modal_VisibleMembers = true">批量导入</i-button>
-      </div>
-    </div>
-
-    <Table border ref="selection" :columns="columns4" :data="data1">
-      <div slot="footer" class="foot">
-        <div class="left-foot"> 
-          当前显示<span>{{a}}</span>条数据，共21条
+    <table id="guide">
+      <tr>
+        <th>武器试验</th>
+      </tr>
+      <tr>
+        <td>试验场景</td>
+      </tr>
+      <tr>
+        <td>武器库管理</td>
+      </tr>
+    </table>
+      <div id="rightpart"> 
+        <div class="table-container" style="width: auto;">
+          <input class="input" v-model="Inputvalue" placeholder="请点击此处输入关键字查询" id="input1"></input>
+          <Button style="margin:0 .2rem">查询</Button>
         </div>
-        <div class="right-foot">
-          <Page :total="100" ></Page>
-        </div>
+        <Button class="fr" @click="Modal_Delete = true">删除</Button>
+        <Button class="fr" @click="Modal_Add = true" style="margin:0 .2rem">添加</Button>
+
+        <Table v-if="sceneTable.data.length" cellpadding=0 border ref="sceneTable" :columns="sceneTable.column"
+          :data="sceneTable.data">
+          <div slot="footer" class="table-foot">
+            <div class="fl">
+              当前显示<span>{{a}}</span>条数据，共21条
+            </div>
+            <div class="fr">
+              <Page :total="100" show-elevator></Page>
+            </div>
+          </div>
+        </Table>
       </div>
-    </Table>
 
 
-    <Modal id="Modal_Add" v-model="Modal_VisibleMembers" title="添加" @on-ok="ok" @on-cancel="cancel"
+    <Modal id="Modal_Add" v-model="Modal_Add" title="添加" @on-ok="ok" @on-cancel="cancel"
       width="-1">
-      <div class="wrap">
-        <Input></Input>
-      </div>
+      <Form label-position="top">
+        <FormItem label="场景名称">
+          <Input id="modal-input" placeholder="请输入武器库名称"></Input>
+        </FormItem>
+        <FormItem label="场景名称">
+          <i-select class="line2">
+            <i-option v-for="item in typeList" :value="item.value">{{ item.label }}</i-option>
+          </i-select>
+        </FormItem>
+
+      </Form>
+        <Transfer :titles="transferOption.title" :data="data2" :target-keys="targetKeys2" :filter-method="filterMethod" @on-change="handleChange2">
+        </Transfer>
       <div slot="footer">
         <i-button style="padding:.1rem .3rem">确 定</i-button>
-        <i-button style="padding:.1rem .3rem" @click="Modal_VisibleMembers = false">取 消</i-button>
+        <i-button style="padding:.1rem .3rem" @click="Modal_Add = false">取 消</i-button>
       </div>
     </Modal>
 
@@ -47,95 +68,148 @@
 
 <script>
   export default {
-    name: "WeaponTest",
+
+    name: "Scenes",
     data() {
       return {
-        a:15,
+        Inputvalue: '',
+        a: 15,
         ModalWidth: [],
         data2: this.getMockData(),
         targetKeys2: this.getTargetKeys(),
-        columns4: [
-          {
-            type: "selection",
-            width: 60,
-            align: "center"
-          },
-          {
-            title: "序号",
-            key: "number"
-          },
-          {
-            title: "场景名称",
-            key: "sceneName"
-          },
-          {
-            title: "场景拓扑",
-            key: "topo"
-          },
-          {
-            title: "所含武器",
-            key: "weapon"
-          },
-          {
-            title: "开始试验",
-            key: "start"
-          },
-          {
-            title: "操作",
-            key: "operation",
-            render: (h, params) => {
-              return h('div', [
-                h('Button', {
-                  props: {
-                    type: 'primary',
-                    size: 'small'
-                  },
-                  style: {
-                    marginRight: '5px'
-                  },
-                  on: {
-                    click: () => {
-                      this.show(params.index)
-                    }
-                  }
-                }, 'View'),
-                h('Button', {
-                  props: {
-                    type: 'error',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      this.remove(params.index)
-                    }
-                  }
-                }, 'Delete')
-              ]);
-            }
-          }
-        ],
-        data1: this.setData1(),
-        Modal_VisibleMembers: false,
-        Modal_Delete: false
-      };
+        
+        sceneTable: {
+          column: [],
+          data: []
+        },
+        transferOption: {
+          title: ["已选人员", "人员列表"],
+        },
+        Modal_Add: false,
+        Modal_Members: false,
+        Modal_Delete: false,
+
+      };//end return
+    },//end data
+    computed: {
+      breadList() {
+        return this.$route.matched || [];
+      }
     },
     mounted() {
-      this.$store.dispatch("getDevice").then(res => {
-        console.log(res, "getDevice");
-      });
+  
+
+      this.getSceneTable();
+
     },
     methods: {
-      setData1() {
-        let mockData = [];
-        for (let i = 1; i <= 15; i++) {
-          mockData.push({
-            sceneName: '模拟练习' + i.toString(),
-            number: i,
-            topo: '网络攻防模型拓扑' + i.toString(),
-            weapon:'攻击武器库；防御武器库；测试武器库'
-          });
-        }
-        return mockData;
+      getSceneTable() {
+        var that = this;
+        this.sceneTable.column = [
+          { type: "selection", width: 60, align: "center" },
+          { title: "场景名称", key: "sceneName" },
+          { title: "场景拓扑", key: "topo" },
+          { title: "所含武器库", key: "arsenal" },
+          {
+            title: "开始试验", key: "start", render: (h, params) => {
+              return h("a", [
+                h('img', {
+                  style: {
+                    height: ".3rem",
+                    width: ".3rem",
+                    verticalAlign: "middle",
+                    margin: "-.05rem 0 0 0"
+                  },
+                  attrs: {
+                    src: require('@/images/list/weaponCall.png'),
+                    title: '开始试验'
+                  }
+                })
+              ]);
+            }//end render
+          },
+          {
+            title: "操作", key: "operation", render: (h, params) => {
+              return h("a", [
+                h('img', {
+                  style: {
+                    height: ".3rem",
+                    width: ".3rem",
+                    verticalAlign: "middle",
+                    margin: "-.05rem 0 0 0"
+                  },
+                  attrs: {
+                    src: require('@/images/list/edit.png'),
+                    title: 'gogo'
+                  }
+                }),
+                h('img', {
+                  style: {
+                    height: ".3rem",
+                    width: ".3rem",
+                    verticalAlign: "middle",
+                    margin: "-.05rem 0 0 0"
+                  },
+                  attrs: {
+                    src: require('@/images/list/delete.png'),
+                    title: 'gogo'
+                  }
+                })
+              ]);
+            }//end render
+          }];
+
+
+        this.sceneTable.data = [
+          {
+            "sceneName": "模拟练习一",
+            "topo": "网络模型攻防拓扑004",
+            "arsenal": "攻击武器库",
+            "searchValue": null,
+            "createBy": "菜",
+            "createTime": "2020-03-10 23:56:50",
+            "updateBy": "更新者",
+            "updateTime": "2020-03-03 23:56:57",
+            "remark": "备注",
+            "dataScope": null,
+            "params": {},
+            "scenarioId": 1,
+            "topologyId": 1,
+            "delFlag": "0"
+          },
+          {
+            "sceneName": "模拟练习二",
+            "topo": "网络模型攻防拓扑004",
+            "arsenal": "防御武器库",
+            "searchValue": null,
+            "createBy": "创建者",
+            "createTime": "2020-03-10 23:56:50",
+            "updateBy": "更新者",
+            "updateTime": "2020-03-03 23:56:57",
+            "remark": "备注",
+            "dataScope": null,
+            "params": {},
+            "scenarioId": 2,
+            "topologyId": 1,
+            "delFlag": "0"
+          },
+          {
+            "sceneName": "模拟练习三",
+            "topo": "网络模型攻防拓扑004",
+            "arsenal": "测试武器库",
+            "searchValue": null,
+            "createBy": "创建者",
+            "createTime": "2020-03-10 23:56:50",
+            "updateBy": "更新者",
+            "updateTime": "2020-03-03 23:56:57",
+            "remark": "备注",
+            "dataScope": null,
+            "params": {},
+            "scenarioId": 3,
+            "topologyId": 1,
+            "delFlag": "2"
+          },
+        ];
       },
       getMockData() {
         let mockData = [];
@@ -177,7 +251,7 @@
       changeNum() {
         this.$store.dispatch("change", 10);
       },
-      changePage () {
+      changePage() {
 
       }
     }
@@ -195,14 +269,12 @@
 
   @import url(../../less/iview.less);
 
-  .page {
-    padding: 0 0.35rem;
-    .hf;
-  }
+  @import url(../../less/list.less);
+
+  
 
   .buttons{
     display: inline-block;
-    width: 18.4rem
   }
   .left-buttons{
     float: left;
@@ -212,46 +284,39 @@
     float: right;
   }
 
-  .ivu-transfer {
-    font-size: 0.18rem;
+  #list .ivu-table{
+    float:right;
+    width: 15.3rem;
   }
 
-  .ivu-table-header {
-    font-size: 0.2rem;
-    border-bottom: 1px #0080ff solid;
+  #guide {
+    float:left;
+    width: 2.8rem;
+    height: 1.7rem;
+    border-collapse: collapse;
   }
-
-  .ivu-table-header th {
+  #guide tr{
+    border:  1px #0080ff solid;
+    text-align: center;
+  }
+  #guide th {
     background-color: rgba(0, 100, 255, 0.4);
   }
-
-  .ivu-table-body tr:nth-child(even) {
-    background-color: rgba(0, 174, 255, 0.2);
+  #rightpart {
+    float: right;
+    width: 15.3rem;
+  }
+  #rightpart .ivu-input {
+    height: .45rem;
   }
 
-  #Modal_VisibleMembers .ivu-modal {
-    width: 6.1rem !important;
-  }
 
-  .ivu-table{
-    width: 18.40rem;
-  }
-
-  .ivu-table-cell {
-    height: 0.4rem;
-    // display:table-cell;
-    // vertical-align:middle
-  }
 
   /*分页*/
   .ivu-page {
     display: inline-flex
   }
 
-  .foot{
-    display: inline-block;
-    width:18.4rem;
-  }
   .left-foot {
     float: left;
   }
@@ -263,6 +328,13 @@
   .ivu-table-footer {
     border-top: 1px #0080ff solid;
     background-color: rgba(0, 100, 255, 0.4);
+  }
+
+
+  #Modal_Add .ivu-modal {
+    width: 7.4rem !important;
+    height: 7.2;
+    background-color: #093393;
   }
 
 </style>

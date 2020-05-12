@@ -1,7 +1,7 @@
-body{overflow-x:hidden;position:relative;margin:0;padding:0;width:100%;min-width:1200px;font-family:"Microsoft Yahei";word-break:break-all}
+body{line-height:1;overflow-x:hidden;position:relative;margin:0;padding:0;width:100%;min-width:1200px;font-family:"Microsoft Yahei";word-break:break-all}
 b,button,dd,div,dl,dt,em,form,i,img,input,label,li,p,span,textarea,ul{margin:0;padding:0;border:0;list-style:none;font-style:normal}
 h1,h2,h3,h4,h5,h6{margin:0;padding:0;border:0;font-weight:400}
-a{text-decoration:none;cursor:pointer}
+a{text-decoration:none;cursor:pointer;color:#fff}
 a:hover,img:hover{opacity:.9;-webkit-transition:.25s ease;-moz-transition:.25s ease;transition:.25s ease;filter:alpha(opacity=90);-ms-transition:.25s ease}
 
 html,body,#app{width:100%;height:100%}
@@ -10,3 +10,11 @@ body{font-size:.18rem;color:#fff}
 
 .fl{float:left}
 .fr{float:right}
+.fn{float: none;}
+
+.cw{clear:both;margin:0;padding:0;width:100%;height:0}
+.ch{clear:both;margin:0;padding:0;width:0;height:100%}
+
+
+.m-b-0{margin-bottom: 0!important;}
+.p-b-0{padding-bottom: 0!important;}

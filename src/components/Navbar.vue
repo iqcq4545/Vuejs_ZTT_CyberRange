@@ -1,50 +1,52 @@
 <template>
   <div class="header">
     <div class="Navbar">
-      <div class="Logo"><img src="../images/navbar_title.png" /></div>
-      <div class="menu">
+      <div class="Logo"><img src="@/images/navbar_title.png" /></div>
+      <div class="Menu">
         <ul>
           <li>
-            <h3>首页</h3>
+            <h3><a href="/index">首页</a></h3>
           </li>
           <li>
-            <h3>拓扑管理</h3>
-            <dl>
-              <dd>拓扑图列表</dd>
-              <dd>拓扑配置</dd>
-            </dl>
+            <h3><a href="/faculty/scenes">场景管理</a></h3>
           </li>
           <li>
-            <h3>系统配置</h3>
-            <dl>
+            <h3><a href="/faculty/topology">拓扑管理</a></h3>
+            <!-- <dl>
+                <dd>拓扑图列表</dd>
+                <dd>拓扑配置</dd>
+              </dl> -->
+          </li>
+          <li>
+            <h3>攻防对抗</h3>
+          </li>
+          <li>
+            <h3>武器试验</h3>
+          </li>
+          <li>
+            <h3><a href="/faculty/students">学员管理</a></h3>
+          </li>
+          <li>
+            <h3><a href="/faculty/devices">设备分配</a></h3>
+            <!-- <dl>
               <dd>资源分配</dd>
-              <dd>软件库</dd>
-            </dl>
+            </dl> -->
           </li>
           <li>
-            <h3>武器库配置</h3>
-          </li>
-          <li>
-            <h3>场景管理</h3>
-          </li>
-          <li>
-            <h3>平台监控</h3>
-
-          </li>
-          <li>
-            <h3>教员管理</h3>
-          </li>
-          <li>
-            <h3>日志管理</h3>
+            <h3><a href="/faculty/software">软件库</a></h3>
           </li>
         </ul>
+      </div>
+      <div class="User fr">
+        <img src="../images/avatar_faculty.png" />
+        <h3>{{userInfo.nickName}}</h3>
+        <p>，欢迎您</p>
       </div>
     </div>
 
     <Breadcrumb separator=">">
-      <BreadcrumbItem to="/" v-for="(item,index) in breadList">首页</BreadcrumbItem>
-      <BreadcrumbItem to="/components/breadcrumb">攻防对抗</BreadcrumbItem>
-      <BreadcrumbItem>红蓝对抗</BreadcrumbItem>
+      <BreadcrumbItem to="/">首页</BreadcrumbItem>
+      <BreadcrumbItem v-for="(item,i) in breadList" :to="item.path">{{item.meta.title}}</BreadcrumbItem>
     </Breadcrumb>
   </div>
 </template>
@@ -53,19 +55,26 @@
     name: 'Navbar',
     data() {
       return {
-
-
+        breadList: [],
+        userInfo: {},
       }
     },
     mounted() {
-
+      this.matched();
+      this.getUserInfo();
     },
     watch: {
 
     },
     methods: {
-      breadList() {
-        return this.$route.matched || [];
+      matched() {
+        console.log(this.$route.matched)
+        this.breadList = this.$route.matched || [];
+      },
+      getUserInfo() {
+        this.$ReqUser.getUserInfo().then((res) => {
+          this.userInfo = res.data.user;
+        });
       },
     },
   }
@@ -99,41 +108,51 @@
     float: left;
   }
 
-  .Navbar .menu {
+  .Navbar .Menu {
     position: relative;
     float: left;
     text-align: center;
   }
 
-  .Navbar .menu ul {
+  .Navbar .Menu ul {
     position: relative;
     float: left;
   }
 
-  .Navbar .menu ul li {
+  .Navbar .Menu ul li {
     position: relative;
     float: left;
-  }
 
-  .Navbar .menu ul li:hover {
-    background: url(../images/navbarHover.png) no-repeat bottom center;
 
   }
 
-  .Navbar .menu ul li:hover dl {
+  .Navbar .Menu ul li:hover {
+    background-image: url(../images/navbarHover.png);
+    background-position: bottom center;
+    background-repeat: no-repeat;
+  }
+
+  .Navbar .Menu ul li:hover dl {
     display: block;
   }
 
-  .Navbar .menu ul li h3 {
+  .Navbar .Menu ul li h3 {
     font-size: .2rem;
     font-weight: bold;
     height: .6rem;
     line-height: .6rem;
     padding: 0 .25rem;
     z-index: 2;
+    position: relative;
   }
 
-  .Navbar .menu dl {
+  .Navbar .Menu ul li h3 a {
+    width: 100%;
+    height: 100%;
+    float: left;
+  }
+
+  .Navbar .Menu dl {
     position: absolute;
     width: 100%;
     float: left;
@@ -143,17 +162,44 @@
     left: 0;
     top: .6rem;
     line-height: .5rem;
+    z-index: 1;
     display: none;
+
   }
 
-  .Navbar .menu dl dd {
+  .Navbar .Menu dl dd {
     float: left;
     width: 100%;
   }
 
+  .Navbar .User {
+    margin: 0 .35rem 0 0;
+    height: .6rem;
+  }
+
+  .Navbar .User img {
+    float: left;
+    width: .36rem;
+    height: .36rem;
+    margin: .12rem;
+  }
+
+  .Navbar .User h3 {
+    float: left;
+    color: #0ef;
+    font-weight: bold;
+    line-height: .6rem;
+  }
+
+  .Navbar .User p {
+    float: left;
+    line-height: .6rem;
+  }
+
   .ivu-breadcrumb {
-    .fslh(16);
-    padding: .2rem .35rem;
+    font-size: .16rem;
+    line-height: .2rem;
+    padding: .15rem .35rem;
   }
 
   .ivu-breadcrumb a {

@@ -12,29 +12,40 @@
   export default {
     name: "App",
     provide() {
-      return {};
+      return {
+
+      };
     },
     data() {
       return {
         navbar: {
-          show: true
-        }
+          show: true,
+        },
+        userinfo: {}
       };
     },
     components: {
       Navbar: Navbar
     },
     created() { },
-    watch: {},
-    computed: {},
-    mounted() {
-      if (this.$route.path === "/login") {
-        this.navbar.show = false;
-      } else {
-        this.navbar.show = true;
+    watch: {
+      $route(to, from) {
+        this.showNavbar();
       }
     },
-    methods: {}
+    computed: {},
+    mounted() {
+      this.showNavbar();
+    },
+    methods: {
+      showNavbar() {
+        if (this.$route.path === "/login") {
+          this.navbar.show = false;
+        } else {
+          this.navbar.show = true;
+        }
+      },
+    }
   };
 </script>
 

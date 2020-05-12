@@ -76,9 +76,7 @@
       };
     },
     mounted() {
-      this.$store.dispatch("getDevice").then(res => {
-        console.log(res, "getDevice");
-      });
+    
     },
     methods: {
 

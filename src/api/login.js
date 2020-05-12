@@ -2,18 +2,30 @@ import { request } from '../utils/http.js';
 
 class REQ_LOGIN {
   //设备数
-  getDeviceCount(data = {}) {
+  getVericode(data = {}) {
     return request({
-      url: `/ZTL_Statistics/LargeScreen/GetDeviceCount`,
+      url: `/captchaImage`,
       data: data,
       params: data,
       headers: {
         "Content-Type": "application/json;charset=UTF-8"
       },
       method: 'GET',
-
     });
   }
+
+  login(data = {}) {
+    return request({
+      url: `/login`,
+      data: data,
+      params: data,
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8"
+      },
+      method: 'POST',
+    });
+  }
+
 }
 
 export const ReqLogin = new REQ_LOGIN();

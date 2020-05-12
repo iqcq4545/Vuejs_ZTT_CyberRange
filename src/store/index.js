@@ -3,40 +3,32 @@ import Vuex from "vuex";
 
 Vue.use(Vuex);
 
-import { ReqLogin } from '../api/login';
+const vue = Vue.prototype;
 
 export default new Vuex.Store({
   state: {
-    count: 0
-  },
-  getters: {
+    count: 0,
+    obj: [{ a: "1" }, { b: "2" }],
 
-    synchro(state) {
-      return state.count
-    }
 
+    userList: []
   },
+
+
   mutations: {
 
-    increment(state) {
-      state.count++
+    getUserList(state, data) {
+      state.userList = data;
     },
-    inreduce(state) {
-      state.count--
-    },
-    inchange(state, num) {
-      state.count = num
-    }
-
   },
+
   actions: {
 
-    getDevice({ commit }) {
+    getUserList({ commit }) {
       return new Promise((resolve, reject) => {
-        ReqLogin.getDeviceCount().then((res) => {
-          console.log(res)
-          commit('inchange', res.data.data);
-          resolve(res.data.data);
+        vue.$ReqUser.getUserList({ admin: false }).then((res) => {
+          commit('getUserList', res.data.rows);
+          resolve(res.data.rows);
         });
       });
 
@@ -46,5 +38,16 @@ export default new Vuex.Store({
       context.commit('inchange', num)
     }
 
-  }
+  },
+
+
+
+  getters: {
+
+    synchro(state) {
+      return state.count
+    }
+
+  },
+
 });

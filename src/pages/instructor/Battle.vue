@@ -1,23 +1,11 @@
 <template>
   <div class="page">
-    <!-- 面包屑 -->
-    <Breadcrumb separator=">" style="margin-bottom:0.2rem">
-      <BreadcrumbItem to="/">首页</BreadcrumbItem>
-      <BreadcrumbItem to="/components/breadcrumb">系统配置</BreadcrumbItem>
-      <span>
-        <a class="ivu-breadcrumb-item-link" style="color:#14edfc">资源配置</a>
-      </span>
-    </Breadcrumb>
     <!-- 左侧导航 -->
     <div class="leftpart">
       <Collapse v-model="value2" accordion>
         <Panel name="1">
           科目训练管理
-          <p slot="content">训练管理</p>
-          <p slot="content">情景管理</p>
-          <p slot="content">题库管理</p>
-          <p slot="content">态势展示</p>
-          <p slot="content">成绩查询</p>
+          <p slot="content" v-if>训练管理</p>
         </Panel>
         <Panel name="2" class="lastp">
           红蓝对抗
@@ -32,22 +20,63 @@
     <!-- 右侧表格 -->
     <div class="rightpart">
       <!-- <Button @click="Modal_Delete = true" style="float:right">删 除</Button> -->
-      <Button @click="Modal_AddScenes = true" style="float:right">删 除</Button>
-      <Button @click="Modal_Add = true" style="float:right;margin-right:0.1rem">添 加</Button>
+      <div class="headbutton">
+        <Button @click="Modal_AddScenes = true" style="float:right">删 除</Button>
+        <Button @click="Modal_Add = true" style="float:right;margin-right:0.1rem">添 加</Button>
 
-      <Input v-model="Inputvalue" placeholder="请点击此处输入关键字查询" style="width: 300px"></Input>
-      <Button @click="Modal_VisibleMembers = true" style="margin-left:0.4rem">查 询</Button>
+        <Input v-model="Inputvalue" placeholder="请点击此处输入关键字查询"></Input>
+        <Button style="margin-left:0.4rem" @click="Modal_Detail = true">查 询</Button>
+      </div>
 
       <Table border ref="selection" :columns="columns4" :data="data4" style="margin-top:0.15rem">
-        <div class="footer" slot="footer">
-          <span>当前显示1到15条，共21条</span>
-          <div class="paginate" style="float:right">
-            <span>首页</span>
-            <span>末页</span>
+        <div slot="footer" class="footer">
+          <div class="fl">
+            当前显示
+            <span>5</span>条数据，共5条
+          </div>
+          <div class="fr">
+            <Page :total="100" show-elevator></Page>
           </div>
         </div>
       </Table>
     </div>
+
+    <!-- 查看详情 -->
+    <Modal id="Modal_Detail" v-model="Modal_Detail" title="查看详情">
+      <div class="detailhead" style="overflow:hidden;font-weight:bold">
+        <div class="headtop" style="height: 35px;line-height: 35px;">
+          <div class="detailleft" style="float:left">
+            <span style="margin-right:20px">
+              <i>用户id：</i>
+              <i>苏州</i>
+            </span>
+            <span style="margin-right:20px">
+              <i>用户名称：</i>
+              <i>HZ1</i>
+            </span>
+            <span>
+              <i>成绩：</i>
+              <i>1000</i>
+            </span>
+          </div>
+          <div class="detailright" placeholder="关键字查询" style="float:right">
+            <input type="text" placeholder="关键字查询" />
+            <span style="color: #0ef;">删除</span>
+          </div>
+        </div>
+        <Table border ref="selection" :columns="columns3" :data="data3" style="margin-top:10px"></Table>
+        <div class="detailpage" style="margin-top:10px">
+          <span>当前显示 <i style="color: #0ef;">1</i> - <i style="color: #0ef;">10</i> 个</span>
+          <span>共  <i style="color: #0ef;">34</i> 个</span>
+            <Page :current="2" :total="50" simple style="float:right"></Page>
+        </div>
+      </div>
+      <div slot="footer">
+        <i-button style="padding:.1rem .3rem">确 定</i-button>
+        <i-button style="padding:.1rem .3rem" @click="Modal_VisibleMembers = false">取 消</i-button>
+      </div>
+    </Modal>
+
     <!-- 添加按钮模态框 -->
     <Modal id="Modal_Add" v-model="Modal_Add" title="添加训练">
       <div class="modelitem">
@@ -56,7 +85,7 @@
       </div>
       <div class="modelitem">
         <p>模式</p>
-        <Input v-model="value" placeholder style="width: 437px"></Input>
+        <Input v-model="valuetype" placeholder style="width: 437px"></Input>
       </div>
       <div class="modelitem" style="float:left">
         <p>开始时间</p>
@@ -82,11 +111,12 @@
         <i-button style="padding:.1rem .3rem" @click="Modal_VisibleMembers = false">取 消</i-button>
       </div>
     </Modal>
+
     <!-- 情景设置模态框 -->
     <Modal
       id="Modal_VisibleMembers"
       v-model="Modal_VisibleMembers"
-      title="设备分配"
+      title="情景设置"
       @on-ok="ok"
       @on-cancel="cancel"
       width="-1"
@@ -157,11 +187,13 @@ export default {
   name: "Scenes",
   data() {
     return {
+      studentTable: "",
       value2: "1",
       value: "",
+      valuetype: "",
       Inputvalue: "",
       ModalWidth: [],
-      titles: ["已选人员", "所有人员"],
+      titles: ["已选情景", "所有情景"],
       data2: this.getMockData(),
       targetKeys2: this.getTargetKeys(),
       data11: [
@@ -191,7 +223,68 @@ export default {
           }
         }
       ],
-      columns4: [
+      columns3: [
+        {
+          type: "selection",
+          width: 60
+        },
+        {
+          title: "序号",
+          key: "name"
+        },
+        {
+          title: "提交时间",
+          key: "age"
+        },
+        {
+          title: "Flag",
+          key: "address"
+        },
+        {
+          title: "靶机IP",
+          key: "age"
+        },
+        {
+          title: "攻击源",
+          key: "age"
+        },
+              {
+          title: "得分",
+          key: "age"
+        },
+              {
+          title: "失分",
+          key: "age"
+        },
+
+      ],
+      data3: [
+        {
+          name: "John Brown",
+          age: 18,
+          address: "New York No. 1 Lake Park",
+          date: "2016-10-03"
+        },
+        {
+          name: "Jim Green",
+          age: 24,
+          address: "London No. 1 Lake Park",
+          date: "2016-10-01"
+        },
+        {
+          name: "Joe Black",
+          age: 30,
+          address: "Sydney No. 1 Lake Park",
+          date: "2016-10-02"
+        },
+        {
+          name: "Jon Snow",
+          age: 26,
+          address: "Ottawa No. 2 Lake Park",
+          date: "2016-10-04"
+        }
+      ],
+            columns4: [
         {
           type: "selection",
           width: 60
@@ -218,8 +311,27 @@ export default {
         },
         {
           title: "情景设置",
-          key: "age",
-          className: "center"
+          className: "center",
+          render: (h, params) => {
+            return h("a", [
+              h("img", {
+                style: {
+                  width: ".3rem",
+                  verticalAlign: "middle"
+                },
+                attrs: {
+                  src: require("../../images/list/setscenes.png"),
+                  title: "情景设置",
+                  background: "#00307a"
+                },
+                on: {
+                  click: () => {
+                    this.Modal_VisibleMembers = true;
+                  }
+                }
+              })
+            ]);
+          }
         },
         {
           title: "状态",
@@ -246,22 +358,30 @@ export default {
           className: "center",
           render: (h, params) => {
             return h("a", [
-              h("Icon", {
-                props: {
-                  type: "person"
-                },
+              h("img", {
                 style: {
-                  marginRight: "0.15rem"
+                  width: ".3rem",
+                  verticalAlign: "middle",
+                  margin: "0 0.12rem 0 0"
+                },
+                attrs: {
+                  src: require("../../images/list/edit.png"),
+                  title: "修改"
                 },
                 on: {
                   click: () => {
-                    this.show(params.index);
+                    this.Modal_Add = true;
                   }
                 }
               }),
-              h("Icon", {
-                props: {
-                  type: "person"
+              h("img", {
+                style: {
+                  width: ".3rem",
+                  verticalAlign: "middle"
+                },
+                attrs: {
+                  src: require("../../images/list/delete.png"),
+                  title: "删除"
                 }
               })
             ]);
@@ -297,14 +417,11 @@ export default {
       Modal_Add: false,
       Modal_Delete: false,
       Modal_AddScenes: false,
-      Modal_VisibleMembers: false
+      Modal_VisibleMembers: false,
+      Modal_Detail: false
     };
   },
-  mounted() {
-    this.$store.dispatch("getDevice").then(res => {
-      console.log(res, "getDevice");
-    });
-  },
+  mounted() {},
   methods: {
     show(index) {
       this.$Modal.info({
@@ -370,6 +487,13 @@ export default {
 
 .page {
   padding: 0 0.35rem;
+  position: fixed;
+  top: 1.16rem;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
   .hf;
 }
 
@@ -391,7 +515,7 @@ export default {
 }
 
 #Modal_VisibleMembers .ivu-modal {
-  width: 6.1rem !important;
+  width: 6.5rem !important;
 }
 
 #Modal_Delete .ivu-modal {
@@ -401,9 +525,7 @@ export default {
 .center {
   text-align: center !important;
 }
-.header {
-  padding: 0.2rem 0;
-}
+
 .footer {
   height: 0.4rem;
   box-sizing: border-box;
@@ -442,13 +564,15 @@ textarea::-webkit-input-placeholder {
   padding-left: 0.15rem;
 }
 .modelitem {
-  margin-bottom: 0.3rem;
+  margin-bottom: 30px;
 }
 .modelitem p {
-  font-size: 0.16rem;
-  margin-bottom: 0.1rem;
+  font-size: 16px;
+  margin-bottom: 10px;
 }
-
+.modelitem input {
+  height: 35px !important;
+}
 .ivu-modal-body {
   padding: 40px;
 }
@@ -478,7 +602,7 @@ textarea::-webkit-input-placeholder {
 .clear {
   clear: both;
 }
-.ivu-dropdown-rel a{
+.ivu-dropdown-rel a {
   color: #fff;
   border: 1px #0080ff solid;
   height: 32px;
@@ -489,5 +613,70 @@ textarea::-webkit-input-placeholder {
 .ivu-dropdown-rel a .ivu-icon {
   float: right;
 }
+.ivu-input-wrapper {
+  width: 3rem;
+  height: 0.6rem;
+  vertical-align: top;
+}
+.headbutton .ivu-btn {
+  width: 0.78rem;
+  height: 0.45rem;
+  padding: 0;
+  font-size: 0.16rem;
+}
+.ivu-table-cell .ivu-btn {
+  width: 0.6rem;
+  height: 0.25rem;
+  font-size: 0.14rem;
+  padding: 0;
+}
+.ivu-date-picker .ivu-input-wrapper {
+  width: 200px;
+}
+.ivu-input-wrapper input {
+  height: 0.19rem;
+}
+.ivu-select-dropdown {
+  color: #fff;
+}
+.ivu-input-icon {
+  position: absolute;
+  right: 0;
+  z-index: 3;
+  width: 40px;
+  height: 35px;
+  color: #f5b44b;
+  text-align: center;
+  font-size: 16px;
+  line-height: 35px;
+}
+.ivu-picker-panel-body button {
+  width: 45px;
+  height: 30px;
+  line-height: 10px;
+  font-size: 14px;
+  padding: 1px 2px;
+}
 
+// 查看详情 模态框
+#Modal_Detail .ivu-modal-content {
+  width: 1050px;
+}
+#Modal_Detail .ivu-modal {
+  width: 1050px !important;
+}
+#Modal_Detail .ivu-table-header {
+  border-bottom: none;
+}
+#Modal_Detail th {
+  font-weight: normal;
+}
+#Modal_Detail .headtop input {
+  height: 30px;
+  padding: 12px 16px;
+  border: 1px solid #0080ff;
+  background-color: rgba(0, 34, 85, 0.8);
+  color: #fff;
+  width: 200px;
+}
 </style>

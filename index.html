@@ -12,16 +12,22 @@
   <meta content="telephone=no,email=no" name=format-detection>
 
   <title>range</title>
+
 </head>
+<script src="/static/jTopo.js"></script>
+
 <script>
-  function fontSize() {
-    var REM = 100 * (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) / 1920;
+  var fontSize = new function () {
+    this.last = this.scale;
+    this.scale = (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) / 1920;
+    var REM = 100 * this.scale;
     document.getElementsByTagName("html")[0].style.fontSize = REM + 'px';
     return REM;
-  };
-  fontSize();
+  }
+
+  fontSize.constructor();
   window.onresize = function () {
-    fontSize();
+    fontSize.constructor();
   }
 </script>
 

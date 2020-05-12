@@ -93,7 +93,23 @@
 
 
       <div class="panel w2 h2">
-        <h3 class="title">节点比例</h3>
+        <div class="fl" style="width:5rem">
+          <h3 class="title">节点比例</h3>
+          <div id="pie2" style="width:5rem;height:6.6rem;margin:0 0 0 -.2rem"></div>
+        </div>
+
+        <div class="fr">
+
+          <h3 class="title">节点比例</h3>
+          <div class="pie" id="pie3" style="width:3rem;height:2rem"></div>
+
+          <h3 class="title">节点比例</h3>
+          <div class="pie" id="pie4" style="width:3rem;height:2rem"></div>
+
+          <h3 class="title">节点比例</h3>
+          <div class="pie" id="pie5" style="width:3rem;height:2rem"></div>
+
+        </div>
 
       </div>
     </div>
@@ -127,6 +143,9 @@
       that.barY1();
       that.barY2();
       that.pie1();
+      that.pie2();
+      that.pie3();
+
       window.addEventListener("resize", () => {
         setTimeout(() => {
           that.chartSize();
@@ -378,12 +397,150 @@
         this.pie1.setOption(option);
       },
 
+
+      pie2() {
+        var option = {
+
+          tooltip: {
+            trigger: 'item',
+            formatter: '{b}: {c} ({d}%)'
+          },
+          series: [
+            {
+              name: '节点比例',
+              type: 'pie',
+              hoverAnimation: false,
+              radius: [0, '60%'],
+              itemStyle: {
+                normal: {
+                  borderColor: '#fff',
+                  borderWidth: 1
+                }
+              },
+              label: {
+                position: 'inner'
+              },
+              labelLine: {
+                show: false
+              },
+              data: [
+                { value: 6, name: '仿真', itemStyle: { color: "#2C90D3" } },
+                { value: 4, name: '模拟', itemStyle: { color: "#52C2DA" } },
+              ]
+            },
+            {
+              name: '访问来源',
+              type: 'pie',
+              radius: ['60%', '75%'],
+              itemStyle: {
+                normal: {
+                  borderColor: '#fff',
+                  borderWidth: 1
+                }
+              },
+              hoverAnimation: false,
+              label: {
+                formatter: (params) => {
+                  return (
+                    params.name + "\n" + params.percent.toFixed(2) + '%'
+                  );
+                },
+                color: "#fff",
+                align: "right"
+              },
+              labelLine: {
+                show: false,
+                normal: {
+                  length: 20,
+                  length2: 0,
+                  lineStyle: {
+                    opacity: 0
+                  }
+                },
+              },
+              data: [
+                { value: 1, name: '主机', itemStyle: { color: "#37A2DA" } },
+                { value: 2, name: '路由器', itemStyle: { color: "#37A2DA" } },
+                { value: 3, name: '交换机', itemStyle: { color: "#37A2DA" } },
+                { value: 1, name: '服务器', itemStyle: { color: "#67E0E3" } },
+                { value: 3, name: '防火墙', itemStyle: { color: "#67E0E3" } },
+
+              ]
+            }
+          ]
+        };
+
+        this.pie2 = echarts.init(document.getElementById("pie2"));
+        this.pie2.setOption(option);
+      },
+
+
+      pie3() {
+        var option = {
+          color: ["#37a2da", "#67e0e3", "#ffdb5c"],
+          tooltip: {
+            trigger: 'item',
+            formatter: '{b}: {c} ({d}%)'
+          },
+          legend: {
+            orient: 'vertical',
+            right: 10,
+            top: "middle",
+            data: ["主机", "路由器", "交换机"],
+            textStyle: {
+              color: "#fff"
+            }
+          },
+
+          series: [{
+            name: '访问来源',
+            type: 'pie',
+            radius: ['60%', '97.5%'],
+            itemStyle: {},
+            hoverAnimation: false,
+            right: "50%",
+
+            label: {
+              formatter: (params) => {
+                return (
+                  params.name + "\n" + params.percent.toFixed(2) + '%'
+                );
+              },
+              color: "#fff",
+              align: "right"
+            },
+            label: {
+              show: false,
+            },
+
+            data: [
+              { value: 2, name: "主机" },
+              { value: 1, name: "路由器" },
+              { value: 1, name: "交换机" },
+            ]
+          }]
+        };
+
+        this.pie3 = echarts.init(document.getElementById("pie3"));
+        this.pie4 = echarts.init(document.getElementById("pie4"));
+        this.pie5 = echarts.init(document.getElementById("pie5"));
+
+        this.pie3.setOption(option);
+        this.pie4.setOption(option);
+        this.pie5.setOption(option);
+
+      },
+
       chartSize() {
         var that = this;
         that.barX.resize();
         that.barY1.resize();
         that.barY2.resize();
         that.pie1.resize();
+        that.pie2.resize();
+        that.pie3.resize();
+        that.pie4.resize();
+        that.pie5.resize();
       }
 
     }
@@ -411,7 +568,7 @@
     font-size: .2rem;
     line-height: .2rem;
     padding-bottom: .2rem;
-    color: #1ef;
+    color: #0ef;
     font-weight: bold;
 
   }
@@ -440,6 +597,24 @@
     height: 7rem;
   }
 
+  .index .panel.w2.h2 .fr {
+    width: 3rem;
+  }
+
+
+
+  .index .panel.w2.h2 h3.title {
+    width: 3rem;
+    padding-bottom: 0;
+  }
+
+
+  .index .panel.w2.h2 .pie {
+    padding-bottom: .2rem
+  }
+
+
+
   .index .table {
     width: 4rem;
   }
@@ -453,18 +628,18 @@
     padding: .1rem .2rem;
   }
 
-  .index .table thead th{
-    font-size:.18rem
+  .index .table thead th {
+    font-size: .18rem
   }
 
-  .index .table tbody td{
-    font-size:.16rem
+  .index .table tbody td {
+    font-size: .16rem
   }
 
-  .index .table tbody tr:nth-child(odd){
+  .index .table tbody tr:nth-child(odd) {
     background-color: rgba(0, 174, 255, 0.2);
   }
-  
+
   .mr0 {
     margin-right: 0 !important
   }
@@ -485,7 +660,6 @@
     margin-left: 0;
   }
 
-
   .index .top0 dl.total0 dt {
     font-weight: bold;
     width: 100%;
@@ -505,11 +679,15 @@
     background: rgba(9, 85, 170, .33);
     float: left;
   }
+  
+  .index .top0 .total0 dd .cont {
+    width: 100%;
+  }
 
   .index .top0 dl.total0 dd h3 {
     font-size: .14rem;
     float: right;
-    color: #1ef;
+    color: #0ef;
   }
 
 
